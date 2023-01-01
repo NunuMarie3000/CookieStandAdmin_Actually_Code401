@@ -4,12 +4,16 @@ import React from 'react';
 import Header from './newcomponents/Header';
 import Main from './newcomponents/Main';
 import Footer from './newcomponents/Footer';
+import Filler from './newcomponents/FillerData';
 
 export default function App() {
   return (
     <div>
       <Header />
-      <Main />
+      <div style={{ backgroundColor: "#ECFDF5", padding: "4rem 10rem" }}>
+        <Main />
+        <Filler />
+      </div>
       <Footer />
     </div>
     )

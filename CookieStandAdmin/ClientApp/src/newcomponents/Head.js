@@ -2,6 +2,6 @@
 
 export default function Head() {
   return (
-      <h1>Cookie Stand Admin</h1>
+    <h1 style={{ paddingTop:".5rem",fontSize:"40px"} }>Cookie Stand Admin</h1>
     )
 };
