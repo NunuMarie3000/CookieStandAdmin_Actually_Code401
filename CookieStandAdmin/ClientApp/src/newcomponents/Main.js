@@ -1,33 +1,55 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Data from './Data';
 
 
 export default function Main() {
 
-  const [location, setLocation] = useState(null);
-  const [min, setMin] = useState(null);
-  const [max, setMax] = useState(null);
-  const [average, setAverage] = useState(null);
+  const [location, setLocation] = useState("");
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(0);
+  const [average, setAverage] = useState(0);
+  const [stands, setStands] = useState("");
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = "https://cookiestandapi-storm.azurewebsites.net/api/cookiestand";
+    //const url = "https://localhost:7018/api/cookiestand";
     // make axios request to api
     const newStand = {
       location,
-      MinimumCustomersPerHour : min,
-      MaximumCustomersPerHour : max,
-      AverageCookiesPerSale : average
+      Minimum_Customers_Per_Hour: parseInt(min),
+      Maximum_Customers_Per_Hour: parseInt(max),
+      Average_Cookies_Per_Sale: parseInt(average)
     }
-    console.log(newStand);
     try {
-      console.log("before axios");
       await axios.post(url, newStand)
-      console.log("after axios post");
+      getData();
     } catch (error) {
-      console.log(error.message)
+      console.log(error);
+      console.log(error.message);
+    }
+    setLocation("");
+    setAverage(0);
+    setMin(0);
+    setMax(0);
+  }
+
+  const getData = async () => {
+    const url = "https://cookiestandapi-storm.azurewebsites.net/api/cookiestands";
+    try {
+      var response = await axios.get(url);
+      setStands(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+      console.log(error.message);
     }
   }
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <>
@@ -38,26 +60,29 @@ export default function Main() {
 
         <div style={{ gridRow: "2/3", gridColumn: "1/5" }} class="form-group">
           <label for="location">Location</label>
-          <input onChange={(e) => setLocation(e.target.value)} type="text" class="form-control" id="location" placeholder="Enter location" />
+          <input value={location} onChange={(e) => setLocation(e.target.value)} type="text" class="form-control" id="location" placeholder="Enter location" />
         </div>
 
         <div style={{ gridRow: "3/4", gridColumn: "1/2" }} class="form-group">
           <label for="minimum_customers_per_hour">Minimum Customers Per Hour</label>
-          <input onChange={(e) => setMin(e.target.value)} type="number" class="form-control" id="minimum_customers_per_hour" />
+          <input value={min} onChange={(e) => setMin(e.target.value)} type="number" class="form-control" id="minimum_customers_per_hour" />
         </div>
 
         <div style={{ gridRow: "3/4", gridColumn: "2/3" }} class="form-group">
           <label for="maximum_customers_per_hour">Maximum Customers Per Hour</label>
-          <input onChange={(e) => setMax(e.target.value)} type="number" class="form-control" id="maximum_customers_per_hour" />
+          <input value={max} onChange={(e) => setMax(e.target.value)} type="number" class="form-control" id="maximum_customers_per_hour" />
         </div>
 
         <div style={{ gridRow: "3/4", gridColumn: "3/4" }} class="form-group">
           <label for="average_cookies_per_sale">Average Cookies Per Sale</label>
-          <input onChange={(e) => setAverage(e.target.value)} type="number" class="form-control" id="average_cookies_per_sale" />
+          <input value={average} onChange={(e) => setAverage(e.target.value)} type="number" class="form-control" id="average_cookies_per_sale" />
         </div>
 
         <button style={{ gridRow: "3/4", gridColumn: "4/5", backgroundColor: "#15B981", fontSize: "30px" }}>Create</button>
       </form>
+
+
+      {stands != "" && <Data stands={stands} /> }
     </>
   )
 };
